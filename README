@@ -1,0 +1,45 @@
+This is just a project to try writing a more secure OS structure by letting everything be either data or a capability; there's no more
+ the classical process model of abstraction.
+
+
+== DataObject ==
+:: Daten, in Form eines Flat-Memory-Modell, (auf das natürlich unterschiedliche Plattformen wie Hash oder Array aufbauen können)
+:: eine Liste von DataObject's, die "Kinder" dieses DataObject's sind, und die eine der folgenden Eigenschaften besitzen können:
+ -- Execute: ausführbar
+ -- Read: lesbar und ausführbar
+ -- Write: schreibbar
+ -- ReadWrite: lesbar, ausführbar und schreibbar
+:: eine Liste von Capabilities
+
+== Capability ==
+:: eine Capability besteht aus zwei DataObjects:
+ -- data: eine ReadWrite-DataObject
+ -- program: ein Data-Object, das ausgeführt wird, sobald send(cap, data) ausgeführt wird.
+:: zusätzlich kann eine Capability eine Priorität haben, wodurch die Priorisierung geregelt wird [ NOCH NICHT IMPLEMENTIERT ]
+:: TODO: shedular details by capabilities
+
+
+///////////// IMPLEMENTATION DETAILS ////////////////////////////
+
+DataObject: eine Liste befindet sich an Addresse 0x00
+
+[LISTE]->
+
+[ELEMENT:]
+64 Byte:
+Addr. Size Information
+0x00  16  die ersten 4 DataObject-Kinder sowie ein Pointer auf weitere Kinder  + Flags
+0x10  16  die ersten 4 Capabilities sowie ein Pointer auf weitere Capabilities + Flags
+0x20  32  32 Byte an Daten oder Pointer auf weitere Daten, je nach Indirektionsebenen
+
+DataObject-Format: 22 Bit Index sowie 2 Bit Info: 00 Execute, 01 Read, 10 Write, 11 ReadWrite
+
+Die Flags befinden sich an Position 0x0F[7] sowie 0x0F[7]:
+0000: keine Indirektion, direkte Daten
+0001: eine Indirektion, jeweilige Puffergröße 128 Byte [insg. bis zu 1KB]
+0010: zwei Indirektionen, jeweilige Puffergröße 128 Byte [insg. bis zu 32KB]
+0011: zwei Indirektionen, jeweilige Puffergröße 2KB [insg. bis zu 8MB]
+_____________________________________________________________________________
+0100: eine Kopie eines anderen DataObjects (flat copy)
+0101: eine Kopie eines anderen DataObjects -- auch die DataObjects werden kopiert (deep copy)
+xxxx: reserviert
