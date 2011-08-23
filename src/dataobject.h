@@ -81,19 +81,19 @@ void data_set_cap (DataPointer data, size_t index, Capability cap) {
 
 inline uint8_t data_get (DataPointer d, size_t index) {
   DataObject &data = dataObjects[d];
-  if (data.cap[0].program & 0xC00000000 == 0) {
+  if ((data.cap[0].program & 0xC0000000) == 0) {
     if (index < 32)
       return data.raw.bytes[index];
     else
       return 0;
   }
-  else if (data.cap[0].program & 0xC0000000 == 0x40000000) {
+  else if ((data.cap[0].program & 0xC0000000) == 0x40000000) {
     if (index/sizeof(RawData) < 8)
       return rawData[data.raw.program[index/sizeof(RawData)]].byte[index%sizeof(RawData)];
     else
       return 0;
   }
-  else if (data.cap[0].program & 0xC0000000 == 0x80000000) {
+  else if ((data.cap[0].program & 0xC0000000) == 0x80000000) {
     if (index >= sizeof(RawData)*sizeof(RawData))
       return 0;
     else {

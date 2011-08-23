@@ -75,7 +75,7 @@ inline RawDataPointer newRawData () {
     return freeRawData[--freeRawDataLength];
   }
   else {
-    return freeRawDataLength++;
+    return rawDataCount++;
   }
 }
 

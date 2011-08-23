@@ -1,9 +1,9 @@
 #include "memory.h"
 
 DataObject dataObjects[DATA_OBJECT_COUNT];
-uint32_t dataObjectsCount;
+uint32_t dataObjectsCount = 1;
 RawData rawData[RAW_DATA_COUNT];
-uint32_t rawDataCount;
+uint32_t rawDataCount = 1;
 uint32_t freeObjectsList[DATA_OBJECT_COUNT];
 uint32_t freeRawData[RAW_DATA_COUNT];
 CapabilityExecute exe[128][2];
