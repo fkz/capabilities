@@ -10,7 +10,7 @@ typedef uint32_t DataPointerFlags;
 struct Capability {
   DataPointer data;
   DataPointer program;
-};
+} __attribute__((__packed__));;
 
 enum DataObjectFlag {
   DATA_OBJECT_EXECUTE = 0,
@@ -27,23 +27,23 @@ struct DataObject {
     uint8_t bytes[32];
     RawDataPointer program[8];
   } raw;
-};
+} __attribute__((__packed__));;
 
 struct ExtensibleDataCap {
   DataPointerFlags data[16];
   Capability cap[8];
-};
+} __attribute__((__packed__));;
 
 union RawData {
   uint32_t pointers[32];
   ExtensibleDataCap extensibleData;
   uint8_t byte[128];
-};
+} __attribute__((__packed__));;
 
 struct CapabilityExecute {
   Capability cap;
   DataPointerFlags data;
-};
+} __attribute__((__packed__));;
 
 extern DataObject dataObjects[DATA_OBJECT_COUNT];
 extern uint32_t dataObjectsCount;

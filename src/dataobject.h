@@ -107,7 +107,7 @@ inline uint8_t data_get (DataPointer d, size_t index) {
 inline void data_set (DataPointer data, size_t index, uint8_t b) {
   if (index >= sizeof(RawData)*sizeof(RawData))
     return;
-  uint8_t flags = dataObjects[data].cap[0].program & 0xC0000000;
+  uint32_t flags = dataObjects[data].cap[0].program & 0xC0000000;
   bool transform = (flags == 0 && index >= 32) || (flags = 0x40000000 && index >= 8*sizeof(RawData));
   if (transform) {
     if (index < 8*sizeof(RawData))
