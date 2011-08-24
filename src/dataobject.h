@@ -11,7 +11,7 @@ inline DataPointer data_to_pointer (DataPointerFlags data) {
   return data >> 2;
 }
 
-DataPointerFlags create_data() {
+inline DataPointerFlags create_data() {
   DataPointer result = newDataObject();
   memset (dataObjects+result, 0, sizeof (DataObject));
   return data_from_pointer (result, DATA_OBJECT_READWRITE);
@@ -19,7 +19,8 @@ DataPointerFlags create_data() {
 
 
 
-DataPointerFlags data_get_data (DataPointer data, size_t index) {
+inline DataPointerFlags data_get_data (DataPointerFlags d, size_t index) {
+  DataPointer data = data_to_pointer(d);
   if (index <= 2)
     return dataObjects[data].data[index];
   else {
@@ -33,7 +34,9 @@ DataPointerFlags data_get_data (DataPointer data, size_t index) {
   }
 }
 
-void data_set_data (DataPointer data, size_t index, DataPointerFlags data2) {
+inline void data_set_data (DataPointerFlags d, size_t index, DataPointerFlags data2) {
+  if (d & DATA_OBJECT_WRITE == 0) return;
+  DataPointer data = data_to_pointer(d);
   if (index > 18) return;
   if (index <= 2)
     dataObjects[data].data[index] = data2;
@@ -45,7 +48,13 @@ void data_set_data (DataPointer data, size_t index, DataPointerFlags data2) {
   }
 }
 
-Capability data_get_cap (DataPointer data, size_t index) {
+inline void data_set_data_r (DataPointerFlags data, size_t index, DataPointerFlags data2) {
+  if (data & DATA_OBJECT_WRITE == 0) return;
+  data_set_data (data_to_pointer(data), index, data2 & 0xFFFFFFFD);
+}
+
+inline Capability data_get_cap (DataPointer d, size_t index) {
+  DataPointer data = data_to_pointer(d);
   if (index <= 2) {
     Capability result = dataObjects[data].cap[index];
     result.program &= 0x3FFFFFFF;
@@ -64,7 +73,9 @@ Capability data_get_cap (DataPointer data, size_t index) {
   }
 }
 
-void data_set_cap (DataPointer data, size_t index, Capability cap) {
+inline void data_set_cap (DataPointer d, size_t index, Capability cap) {
+  if (d & DATA_OBJECT_WRITE == 0) return;
+  DataPointer data = data_to_pointer(d);
   if (index > 10) return;
   if (index <= 2) {
     DataPointer pp = dataObjects[data].cap[index].program;
@@ -79,7 +90,8 @@ void data_set_cap (DataPointer data, size_t index, Capability cap) {
   }
 }
 
-inline uint8_t data_get (DataPointer d, size_t index) {
+inline uint8_t data_get (DataPointerFlags d_, size_t index) {
+  DataPointer d = data_to_pointer(d_);
   DataObject &data = dataObjects[d];
   if ((data.cap[0].program & 0xC0000000) == 0) {
     if (index < 32)
@@ -104,7 +116,9 @@ inline uint8_t data_get (DataPointer d, size_t index) {
     assert(0);
 }
 
-inline void data_set (DataPointer data, size_t index, uint8_t b) {
+inline void data_set (DataPointerFlags d, size_t index, uint8_t b) {
+  if (d & DATA_OBJECT_WRITE == 0) return;
+  DataPointer data = data_to_pointer(d);
   if (index >= sizeof(RawData)*sizeof(RawData))
     return;
   uint32_t flags = dataObjects[data].cap[0].program & 0xC0000000;
